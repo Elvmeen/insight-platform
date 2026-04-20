@@ -50,107 +50,8 @@ interface Resource {
   downloads: number;
 }
 
-const SAMPLE: Resource[] = [
-  {
-    id: "1",
-    title: "PHY101 Mechanics — 2023 Past Question",
-    description: "First semester exam paper covering kinematics and Newton's laws.",
-    courseCode: "PHY101",
-    level: "100",
-    type: "Past Question",
-    uploader: "Aisha B.",
-    uploadedAt: "2025-02-14",
-    views: 312,
-    downloads: 128,
-  },
-  {
-    id: "2",
-    title: "PHY102 Electricity & Magnetism — Solved Tutorial",
-    courseCode: "PHY102",
-    level: "100",
-    type: "Solved Question",
-    uploader: "Daniel O.",
-    uploadedAt: "2025-03-02",
-    views: 211,
-    downloads: 89,
-  },
-  {
-    id: "3",
-    title: "PHY201 Thermodynamics Notes",
-    courseCode: "PHY201",
-    level: "200",
-    type: "Lecture Note",
-    uploader: "Class Rep '26",
-    uploadedAt: "2024-11-08",
-    views: 540,
-    downloads: 240,
-  },
-  {
-    id: "4",
-    title: "PHY204 Waves & Oscillations — 2022 Past Question",
-    courseCode: "PHY204",
-    level: "200",
-    type: "Past Question",
-    uploader: "Anonymous",
-    uploadedAt: "2024-10-12",
-    views: 187,
-    downloads: 73,
-  },
-  {
-    id: "5",
-    title: "PHY301 Quantum Mechanics — Summary Sheet",
-    courseCode: "PHY301",
-    level: "300",
-    type: "Summary",
-    uploader: "Ifeoma U.",
-    uploadedAt: "2025-01-22",
-    views: 402,
-    downloads: 198,
-  },
-  {
-    id: "6",
-    title: "PHY305 Electromagnetism Solved Problems",
-    courseCode: "PHY305",
-    level: "300",
-    type: "Solved Question",
-    uploader: "Tunde A.",
-    uploadedAt: "2025-02-28",
-    views: 276,
-    downloads: 110,
-  },
-  {
-    id: "7",
-    title: "PHY401 Solid State Physics — Past Question Bundle",
-    courseCode: "PHY401",
-    level: "400",
-    type: "Past Question",
-    uploader: "Final Year Rep",
-    uploadedAt: "2024-12-05",
-    views: 612,
-    downloads: 305,
-  },
-  {
-    id: "8",
-    title: "PHY408 Nuclear Physics Project Guide",
-    courseCode: "PHY408",
-    level: "400",
-    type: "Assignment",
-    uploader: "Anonymous",
-    uploadedAt: "2025-01-10",
-    views: 145,
-    downloads: 52,
-  },
-  {
-    id: "9",
-    title: "Mathematical Methods for Physicists — Cheat Sheet",
-    level: "General",
-    type: "Summary",
-    uploader: "NAPS Exec",
-    uploadedAt: "2024-09-18",
-    views: 980,
-    downloads: 470,
-  },
-];
+// Sample data removed — list is now driven by the Django backend.
+// Wire `GET /api/resources/?level=&type=&q=` and set the result via setResources.
 
 const LEVELS: { key: Level | "ALL"; label: string }[] = [
   { key: "ALL", label: "All Levels" },
@@ -181,16 +82,39 @@ const typeColor: Record<ResourceType, string> = {
   Other: "bg-muted text-foreground",
 };
 
+interface ResourceStats {
+  totalResources: number;
+  levelsCovered: string;
+  contributors: number;
+  totalDownloads: number;
+}
+
+// TODO: replace with `GET /api/resources/stats/` from Django backend
+const DEFAULT_STATS: ResourceStats = {
+  totalResources: 0,
+  levelsCovered: "—",
+  contributors: 0,
+  totalDownloads: 0,
+};
+
+const formatCount = (n: number) => {
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k+`;
+  if (n >= 10) return `${n}+`;
+  return `${n}`;
+};
+
 const Resources = () => {
   const [activeLevel, setActiveLevel] = useState<Level | "ALL">("ALL");
   const [type, setType] = useState<(typeof TYPES)[number]>("All");
   const [query, setQuery] = useState("");
+  const [stats] = useState<ResourceStats>(DEFAULT_STATS);
+  const [resources] = useState<Resource[]>([]);
 
-  // TODO: replace with real auth from Django backend
+  // TODO: replace with real auth from Django backend (e.g. session check via /api/auth/me/)
   const isAuthenticated = false;
 
   const filtered = useMemo(() => {
-    return SAMPLE.filter((r) => {
+    return resources.filter((r) => {
       if (activeLevel !== "ALL" && r.level !== activeLevel) return false;
       if (type !== "All" && r.type !== type) return false;
       if (query.trim()) {
@@ -200,7 +124,7 @@ const Resources = () => {
       }
       return true;
     });
-  }, [activeLevel, type, query]);
+  }, [activeLevel, type, query, resources]);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -253,10 +177,10 @@ const Resources = () => {
           {/* Quick stats */}
           <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
             {[
-              { label: "Resources", value: SAMPLE.length + "+" },
-              { label: "Levels Covered", value: "100–400" },
-              { label: "Contributors", value: "30+" },
-              { label: "Downloads", value: "1.6k+" },
+              { label: "Resources", value: formatCount(stats.totalResources) },
+              { label: "Levels Covered", value: stats.levelsCovered },
+              { label: "Contributors", value: formatCount(stats.contributors) },
+              { label: "Downloads", value: formatCount(stats.totalDownloads) },
             ].map((s) => (
               <div
                 key={s.label}
