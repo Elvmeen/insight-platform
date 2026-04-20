@@ -1,13 +1,15 @@
 import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { ChevronDown, Menu, X } from "lucide-react";
 
 const navItems = [
-  { label: "HOME", href: "#", active: true },
+  { label: "HOME", href: "/" },
   { label: "NEWS", href: "#" },
   { label: "COURSES", href: "#", hasDropdown: true },
   { label: "GP CALCULATOR", href: "#" },
   { label: "DEPARTMENTAL MEMBERS", href: "#" },
   { label: "EVENTS", href: "#" },
+  { label: "EXTRA RESOURCES", href: "/resources" },
   { label: "ABOUT DEPARTMENT", href: "#" },
   { label: "PAGES", href: "#", hasDropdown: true },
 ];
