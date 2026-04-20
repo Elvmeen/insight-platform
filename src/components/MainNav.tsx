@@ -9,7 +9,7 @@ const navItems = [
   { label: "GP CALCULATOR", href: "#" },
   { label: "DEPARTMENTAL MEMBERS", href: "#" },
   { label: "EVENTS", href: "#" },
-  { label: "EXTRA RESOURCES", href: "/resources" },
+  { label: "RESOURCES", href: "/resources" },
   { label: "ABOUT DEPARTMENT", href: "#" },
   { label: "PAGES", href: "#", hasDropdown: true },
 ];
@@ -40,7 +40,7 @@ const MainNav = () => {
             const active =
               (item.href === "/" && location.pathname === "/") ||
               (item.href !== "/" && item.href !== "#" && location.pathname.startsWith(item.href));
-            const classes = `flex items-center gap-1 px-4 py-3 text-xs font-heading font-semibold tracking-wide transition-colors ${
+            const classes = `flex items-center gap-1 px-4 py-3 text-xs font-heading font-semibold tracking-wide whitespace-nowrap transition-colors ${
               active
                 ? "bg-naps-blue text-primary-foreground"
                 : "text-primary-foreground/80 hover:bg-naps-blue/60 hover:text-primary-foreground"
